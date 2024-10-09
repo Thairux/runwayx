@@ -1,17 +1,21 @@
- 
 <?php
 session_start();
 include 'includes/db.php';
+include 'includes/functions.php';
 
-$jobs = [];
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $location = $_POST['location'];
-    $type = $_POST['type'];
+// Check if the 'type' parameter is set
+$jobType = isset($_GET['type']) ? $_GET['type'] : null;
 
-    $stmt = $pdo->prepare("SELECT * FROM jobs WHERE location = :location");
-    $stmt->execute(['location' => $location]);
-    $jobs = $stmt->fetchAll();
+// Prepare the query based on the job type
+if ($jobType) {
+    $stmt = $pdo->prepare("SELECT * FROM jobs WHERE type = :type");
+    $stmt->execute(['type' => $jobType]);
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM jobs");
+    $stmt->execute();
 }
+
+$jobs = $stmt->fetchAll();
 
 include 'includes/header.php'; 
 ?>
